@@ -85,4 +85,4 @@ def train(num_img, batch_size, num_epoch, model, dataset):
         print(f"Finished Epoch {epoch} in {t1 - t0} seconds, Loss: {avg_loss:.4f}")
         torch.save(model.state_dict(), r'C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\model_weights\model{}.pt'.format(epoch))
 
-#train(10000, 10, 3,  brain, shuffled_dataset)
+train(200000, 10, 3,  brain, shuffled_dataset)
