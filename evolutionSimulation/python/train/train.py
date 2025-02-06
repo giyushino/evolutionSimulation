@@ -52,7 +52,6 @@ def batch(batch_size, start_index, dataset):
         truth.append(animals[animal])
     return tensor.float(), truth
 
-
 def train(num_img, batch_size, num_epoch, model, dataset):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     optimizer = optim.Adam(model.parameters(), lr=1e-5)
@@ -68,11 +67,10 @@ def train(num_img, batch_size, num_epoch, model, dataset):
         for i in range(0, num_img, batch_size):
             temp_batch = batch(batch_size, i, dataset)
             predictions = model(temp_batch[0].to(device))
-            ground_truth = torch.tensor(temp_batch[1]).to(device)
-            loss_fn = nn.BCEWithLogitsLoss()
+            ground_truth = torch.tensor(temp_batch[1]).to(device, dtype = torch.long)
+            loss_fn = nn.CrossEntropyLoss()
 
-            correct_logits = predictions.gather(1, ground_truth.view(-1, 1))
-            loss = loss_fn(correct_logits.squeeze(), ground_truth.float())
+            loss = loss_fn(predictions, ground_truth)
 
             optimizer.zero_grad()
             loss.backward()
@@ -86,6 +84,5 @@ def train(num_img, batch_size, num_epoch, model, dataset):
         t1 = time.perf_counter()
         print(f"Finished Epoch {epoch} in {t1 - t0} seconds, Loss: {avg_loss:.4f}")
         torch.save(model.state_dict(), r'C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\model_weights\model{}.pt'.format(epoch))
-
 
 #train(10000, 10, 3,  brain, shuffled_dataset)
