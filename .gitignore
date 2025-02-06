@@ -1,7 +1,9 @@
 evolutionSimulation/python/dataset/dataset.json
+evolutionSimulation/python/dataset/simple_dataset.json
 evolutionSimulation/data/full_numpy_bitmap_crocodile.npy
 evolutionSimulation/data/full_numpy_bitmap_dragon.npy
 evolutionSimulation/data/full_numpy_bitmap_duck.npy
 evolutionSimulation/data/full_numpy_bitmap_lion.npy
 evolutionSimulation/data/full_numpy_bitmap_sheep.npy
 evolutionSimulation/python/dataset/create_dataset.py
+evolutionSimulation/model_weights/
