@@ -1,0 +1,33 @@
+from datasets import load_dataset
+import numpy as np
+import json
+import os 
+
+def create_dataset(directory = r"C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\data", save_path = r"dataset.json"):
+    temp = []
+    names = ["crocodile", "dragon", "duck", "lion", "sheep"]
+
+    for name in os.listdir(directory):
+        temp.append(np.load(os.path.join(directory, name)))
+
+    reshaped = []
+    for animal in temp:
+        bruh = []
+        for i in range(len(animal)):
+            bruh.append(animal[i].reshape(28,28))
+        reshaped.append(bruh)
+    
+    count = 0
+    
+    with open(save_path, "w") as file:
+        for i in range(len(reshaped)):
+            for j in range(len(reshaped[i])):
+                line = {"name": names[i], "image": reshaped[i][j].tolist()}
+                file.write(json.dumps(line) + "\n")
+                count += 1
+                print(f"Line {count} created")
+    
+    dataset = load_dataset("json", data_files=save_path)
+    return dataset
+
+create_dataset()
