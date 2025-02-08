@@ -23,31 +23,7 @@ def batch(batch_size, start_index, dataset):
     truth = []
     images = [sample for sample in dataset["train"][start_index:start_index + batch_size]["image"]]
     tensor = torch.tensor(images)
-    tensor = tensor.view(10, 1, 28, 28)
-    for animal in dataset["train"][start_index:start_index + batch_size]["name"]:
-        truth.append(animals[animal])
-    return tensor.float(), truth
-
-import torch
-import time
-import torch.nn as nn 
-import torch.nn.functional as F
-import torch.optim as optim
-
-
-animals = {
-    "lion": 1,
-    "crocodile": 1,
-    "dragon": 1,
-    "duck": 0,
-    "sheep": 0,
-}
-
-def batch(batch_size, start_index, dataset):
-    truth = []
-    images = [sample for sample in dataset["train"][start_index:start_index + batch_size]["image"]]
-    tensor = torch.tensor(images)
-    tensor = tensor.view(10, 1, 28, 28)
+    tensor = tensor.view(batch_size, 1, 28, 28)
     for animal in dataset["train"][start_index:start_index + batch_size]["name"]:
         truth.append(animals[animal])
     return tensor.float(), truth
@@ -85,4 +61,6 @@ def train(num_img, batch_size, num_epoch, model, dataset):
         print(f"Finished Epoch {epoch} in {t1 - t0} seconds, Loss: {avg_loss:.4f}")
         torch.save(model.state_dict(), r'C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\model_weights\model{}.pt'.format(epoch))
 
-train(200000, 10, 3,  brain, shuffled_dataset)
+#train(200000, 10, 3,  brain, shuffled_dataset)
+
+

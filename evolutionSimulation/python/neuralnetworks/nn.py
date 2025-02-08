@@ -1,6 +1,7 @@
 import torch.nn as nn 
 import torch.nn.functional as F
 
+
 # Simple neural network to model brain of sheep, 2 classes: predator or not
 class Brain(nn.Module):
     def __init__(self, in_channels = 1, num_classes=2):
