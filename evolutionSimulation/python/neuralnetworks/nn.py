@@ -21,4 +21,8 @@ class Brain(nn.Module):
         x = self.fc1(x)            
         return x
 
-model = Brain()
+default_sheep = Brain()
+complicated_sheep = Brain(num_classes = 10)
+print("works")
+print(default_sheep)
+print(complicated_sheep)

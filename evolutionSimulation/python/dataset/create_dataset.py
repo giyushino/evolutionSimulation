@@ -35,10 +35,10 @@ def create_dataset(directory = r"C:\Users\allan\nvim\evolutionSimulation\evoluti
 def create_dataset_simple(save_path, directory = r"C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\data"):
     temp = []
     names = ["lion", "sheep"]
+    """change for later"""
+    temp.append(np.load(r"C:\Users\allan\Downloads\full_numpy_bitmap_lion.npy"))
 
-    temp.append(np.load(r"C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\data\full_numpy_bitmap_lion.npy"))
-
-    temp.append(np.load(r"C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\data\full_numpy_bitmap_sheep.npy"))
+    temp.append(np.load(r"C:\Users\allan\Downloads\full_numpy_bitmap_sheep.npy"))
     
     reshaped = []
     for animal in temp:
