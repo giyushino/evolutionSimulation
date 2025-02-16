@@ -12,6 +12,9 @@ import random
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class Animals():
+    """
+    For future use
+    """
     def __init__(self, species, name, brain_path, num, stats, status, mating, speed, eyesight, fov):
             brain = Brain()
             self.species = species

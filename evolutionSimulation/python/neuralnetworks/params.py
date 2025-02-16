@@ -91,7 +91,61 @@ def modifyParam(model, swapModel, swap = False, merge = False, layers: list = []
 
     return model
 
-def compareParams(base, comparison):
+
+def compareParams(base, comparison, shouldPrint=True):
+    """
+    Uses cosine similarity to calculate how similar two models are 
+
+    Args: 
+        base (nn.Module): The base model to compare.
+        comparison (nn.Module): The model to compare against.
+        shouldPrint (bool): If True, prints information about the comparison. Defaults to True.
+
+    Returns: 
+        difference (float): Summed difference between the layers
+            higher: similar, 0: identical or orthogonal (too rare to be considered), negative: different
+    """
+    if shouldPrint:
+        print(f"Comparing layers of {base.name} with {comparison.name}")
+    
+    difference = 0
+    # Cosine similarity -- Eps used so we don't divide by 0
+    cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
+    
+    for name, module in base.named_modules():
+        if name == "":
+            continue
+        if shouldPrint:
+            print(f"Name: {name} || Module: {module}")
+        
+        if hasattr(module, 'weight'):
+            default = getattr(base, name)
+            compare = getattr(comparison, name)
+            
+            # If two tensors are identical, do nothing
+            if torch.equal(default.weight.clone().detach(), compare.weight.clone().detach()):
+                if shouldPrint:
+                    print(f"{name} is the same") 
+            else:
+                if shouldPrint:
+                    print(f"{name} is different")
+                diff = cos(default.weight.clone().detach(), compare.weight.clone().detach())
+                difference += diff.mean().item()
+                if shouldPrint:
+                    print(f"Cosine similarity for {name}: {diff.mean().item()}")
+        if shouldPrint:
+            print("---------------------------")
+    
+    if difference == 0 and shouldPrint:
+        print("Identical Model")
+    elif shouldPrint:
+        print(difference)
+    
+    print("\n" * 2)
+    return difference
+
+
+def compareParams2(base, comparison):
     """
     Uses cosine similarity to calculate how similar two models are 
 

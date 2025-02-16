@@ -9,10 +9,6 @@ import torch.nn.functional as F
 import torch.optim as optim
 import os
 
-brain = Brain()
-data = load_dataset("json", data_files=r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json")
-shuffled_dataset = data.shuffle()
-
 animals = {
     "lion": 1,
     "crocodile": 1,
@@ -89,7 +85,13 @@ def train(num_img, batch_size, num_epoch, model, dataset):
         t1 = time.perf_counter()
         print(f"Finished Epoch {epoch} in {t1 - t0} seconds, Loss: {avg_loss:.4f}")
         try: 
-            os.mkdir(r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\modelWeights\{}'.format(num_img))
+            os.mkdir(r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\modelWeights\{}'.format(num_img))
         except FileExistsError:
             pass
-        torch.save(model.state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\modelWeights\{}\model{}.pt'.format(num_img, epoch))
+        torch.save(model.state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\modelWeights\{}\model{}.pt'.format(num_img, epoch))
+
+"""
+brain = Brain()
+data = load_dataset("json", data_files=r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json")
+shuffled_dataset = data.shuffle()
+"""
