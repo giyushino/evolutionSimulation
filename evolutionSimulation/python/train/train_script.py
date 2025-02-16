@@ -1,3 +1,4 @@
+#conda_env: evolution
 from evolutionSimulation.python.neuralnetworks.nn import * 
 from datasets import load_dataset
 import torch
@@ -6,9 +7,10 @@ import time
 import torch.nn as nn 
 import torch.nn.functional as F
 import torch.optim as optim
+import os
 
 brain = Brain()
-data = load_dataset("json", data_files=r"C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\python\dataset\simple_dataset.json")
+data = load_dataset("json", data_files=r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json")
 shuffled_dataset = data.shuffle()
 
 animals = {
@@ -59,8 +61,11 @@ def train(num_img, batch_size, num_epoch, model, dataset):
         total_loss += epoch_loss
         t1 = time.perf_counter()
         print(f"Finished Epoch {epoch} in {t1 - t0} seconds, Loss: {avg_loss:.4f}")
-        torch.save(model.state_dict(), r'C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\model_weights\model{}.pt'.format(epoch))
+        try: 
+            os.mkdir(r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\modelWeights\{}'.format(num_img))
+        except FileExistsError:
+            pass
+        torch.save(model.state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\modelWeights\{}\model{}.pt'.format(num_img, epoch))
 
-#train(200000, 10, 3,  brain, shuffled_dataset)
 
 
