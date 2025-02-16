@@ -85,11 +85,10 @@ def train(num_img, batch_size, num_epoch, model, dataset):
         t1 = time.perf_counter()
         print(f"Finished Epoch {epoch} in {t1 - t0} seconds, Loss: {avg_loss:.4f}")
         try: 
-            os.mkdir(r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\modelWeights\{}'.format(num_img))
+            os.mkdir(r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\simpleModelWeights\{}'.format(num_img))
         except FileExistsError:
             pass
-        torch.save(model.state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\modelWeights\{}\model{}.pt'.format(num_img, epoch))
-
+        torch.save(model.state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\simpleModelWeights\{}\model{}.pt'.format(num_img, epoch))
 """
 brain = Brain()
 data = load_dataset("json", data_files=r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json")

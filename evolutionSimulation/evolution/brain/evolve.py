@@ -129,7 +129,7 @@ def newGeneration(oldGeneration, swap, merge, randomInt, skew = 20):
         newGeneration.append([child, 0])
     return newGeneration
     
-def evolve(numMembers: int = 100, startingAccuracy : int = 50, geneticVariability : float = 0.5, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 5, skew = 20, numImg = 40, batchSize = 40):
+def evolve(numMembers: int = 100, startingAccuracy : int = 50, geneticVariability : float = 0.5, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 100, skew = 20, numImg = 400, batchSize = 40):
 
     """
     Finally! Our very simple evolution simulation! I'm very exicted to see if this will work
@@ -148,6 +148,15 @@ def evolve(numMembers: int = 100, startingAccuracy : int = 50, geneticVariabilit
         print(f"Survivor length {len(survivors)}")
         current_generation = newGeneration(survivors, shouldSwap, shouldMerge, geneticVariability, skew)
         print(f"Completed Generation {i + 1}")
+    
+    best = sorted(current_generation, key=lambda x: x[1], reverse=True)
+    for i in range(5):
+        try: 
+            os.mkdir(r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\evolvedWeights\{}'.format(numImg))
+        except FileExistsError:
+            pass
+        torch.save(best[i][0].state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\evolvedWeights\{}\generation{}.pt'.format(numImg, numGenerations))
+
 
 generationTimed = timed(generation)
 datasetTimed = timed(dataset)
