@@ -1,7 +1,7 @@
 #conda_env: evolution
-from nn import Brain
+from evolutionSimulation.python.neuralnetworks.nn import Brain
 import torch
-import torch.nn as nn 
+import torch.nn 
 
 
 def brainStudy(model, see_all = False):
@@ -101,10 +101,10 @@ def compareParams(base, comparison):
         difference (int): summed difference between the layers
             higher: similar, 0: identical or orthogonal(too rare to be considered i think), negative: different
     """
-    print(f"Merging certain layers of {base.name} with {comparison.name}")
+    print(f"Comparing layers of {base.name} with {comparison.name}")
     difference = 0
     # Cosine similarity -- Eps used so we don't divide by 0
-    cos = nn.CosineSimilarity(dim=1, eps=1e-6)
+    cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
     for name, module in base.named_modules():
         if name == "":
             continue
@@ -125,8 +125,10 @@ def compareParams(base, comparison):
         print("Identical Model")
     else:
         print(difference)
+    print("\n" * 2)
     return difference 
 
+"""
 brain1 = Brain("brain 1")
 brain2 = Brain("brain 2")
 brain3 = Brain("brain 3")
@@ -135,6 +137,5 @@ brain3.load_state_dict(brain1.state_dict())
 modifyParam(brain1, brain2, True, False, ["conv1", "conv2"])
 compareParams(brain1, brain3)
 compareParams(brain2, brain3)
-
 #modifyParam(brain1, brain2, False, True, ["conv1", "conv2"])
-
+"""

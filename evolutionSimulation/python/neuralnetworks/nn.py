@@ -1,4 +1,4 @@
-# conda_env: evolution
+#conda_env: evolution
 
 import torch.nn as nn 
 import torch.nn.functional as F
@@ -6,6 +6,9 @@ import torch.nn.functional as F
 
 # Simple neural network to model brain of sheep, 2 classes: predator or not
 class Brain(nn.Module):
+    """
+    A sheep's brain 🧠 ... for now
+    """
     def __init__(self, name = "brain", in_channels = 1, num_classes=2):
         self.name = name
         super(Brain, self).__init__()
