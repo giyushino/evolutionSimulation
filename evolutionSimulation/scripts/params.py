@@ -1,12 +1,14 @@
 #conda_env: evolution
-
+from typing import ParamSpec
 from evolutionSimulation.python.neuralnetworks.nn import Brain
 from evolutionSimulation.python.neuralnetworks.params import *
+from evolutionSimulation.scripts.timer import timed
+from evolutionSimulation.python.eval.accuracy import accuracy
+from datasets import load_dataset
 import random
 import torch
 import torch.nn
 import time
-from evolutionSimulation.scripts.timer import timed
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # Use CUDA if available
 
@@ -98,6 +100,28 @@ def modify(first, second, shouldSwap: bool = False, shouldMerge: bool = False, r
     return first
 
 
+
+#================================TEST================================
+
+"""
+for i in range(20):
+    base = Brain()
+    base_copy = Brain()
+    correct = Brain()
+    base.load_state_dict(base.state_dict())
+    correct.load_state_dict(torch.load(r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/simpleModelWeights/100000/model2.pt"))
+
+    data = load_dataset("json", data_files=r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json")
+    shuffled_dataset = data.shuffle() 
+    accuracyTimed = timed(accuracy)
+    compareParams = timed(compareParams)
+
+    accuracyTimed(shuffled_dataset, 400, 20, base, shouldPrint=True)
+    accuracyTimed(shuffled_dataset, 400, 20, correct, r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/simpleModelWeights/100000/model2.pt", True)
+
+    modify(base, correct, shouldSwap=True, shouldMerge=False, random=0.8, shouldPrint=True)
+    accuracyTimed(shuffled_dataset, 400, 20, base, shouldPrint=True)
+"""
 
 """
 allan = Brain("allan")

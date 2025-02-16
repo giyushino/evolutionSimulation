@@ -6,8 +6,9 @@ from evolutionSimulation.scripts.timer import timed
 from evolutionSimulation.scripts.params import *
 from datasets import load_dataset
 import random
+import math
 
-# Global vars
+
 DATASET_PATH = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json" 
 DEVICE = torch.device("cuda")
 
@@ -39,7 +40,7 @@ def dataset(dataset_path):
     return load_dataset("json", data_files = dataset_path)
 
 
-def sheepPredation(generation, dataset, numImg, batchSize, treshhold, shouldPrint = False):
+def sheepPredation(generation, dataset, numImg, batchSize, treshold, shouldPrint = False):
     """
     Compute accuracy of each member in the generation 
 
@@ -60,12 +61,12 @@ def sheepPredation(generation, dataset, numImg, batchSize, treshhold, shouldPrin
         #print(f"{result} || {(i/len(generation) * 100)}%")
         if i % 10 == 0:
             print("🐑", end = " ", flush=True)
-        if result >= treshhold: 
+        if result >= treshold: 
             generation[i][1] = result
             survivors.append(generation[i])
     return survivors 
 
-def addMembers(generation, numMembers):
+def addMembers(generation, numMembers, dataset, numImg, batchSize):
     """
     Add members to a generation if too many are dead to increase gene pool  
     
@@ -80,7 +81,7 @@ def addMembers(generation, numMembers):
     desired = numMembers - len(generation)
     for i in range(desired):
         outsider = Brain(f"Outside Sheep {i}")
-        generation.append([outsider, 0])
+        generation.append([outsider, accuracy(dataset, numImg, batchSize, model = outsider, weight_path=None) * 100])
     return generation 
 
 def procreate(father, mother, shouldSwap, shouldMerge, randomInt, layers = []):
@@ -100,7 +101,7 @@ def procreate(father, mother, shouldSwap, shouldMerge, randomInt, layers = []):
     """
     return modify(father, mother, shouldSwap, shouldMerge, randomInt, layers)
 
-def newGeneration(oldGeneration, swap, merge, randomInt, skew = 20):
+def newGeneration(oldGeneration, swap, merge, randomInt, numMembers, skew = 5):
     """
     Creating the new generation by picking members of the old to breed, 
     skews to the left towards the members who have higher percentages; 
@@ -109,14 +110,17 @@ def newGeneration(oldGeneration, swap, merge, randomInt, skew = 20):
     Args: 
         oldGeneration (list): Old generation of sheep 
         skew (int): How far we should skew the selection of sheep
+        numMembers (int): How many members to include in the population 
     Returns: 
-        newGenreation (list): New generation of sheep
+        newGeneration (list): New generation of sheep
     """
     newGeneration = []
+    skew = int(len(oldGeneration)/skew)
     oldSort = sorted(oldGeneration, key=lambda x: x[1], reverse=True)
-    print("Current best 10") 
+    print("Current best 10")
     for i in range(10):
         print(oldSort[i][1])
+    
     for i in range(len(oldGeneration)):
         x = random.randint(0, len(oldGeneration) - 1) - skew
         y = random.randint(0, len(oldGeneration) - 1) - skew
@@ -124,16 +128,72 @@ def newGeneration(oldGeneration, swap, merge, randomInt, skew = 20):
             x = 0
         if y < 0:
             y = 0
+        if x == y: 
+            y = random.randint(int(len(oldGeneration)/2), len(oldGeneration) - 1)
         # really should just access father
-        child = procreate(oldSort[x][0], oldSort[y][0], swap, merge, randomInt)
+        child = procreate(oldSort[y][0], oldSort[x][0], swap, merge, randomInt)
         newGeneration.append([child, 0])
     return newGeneration
-    
-def evolve(numMembers: int = 100, startingAccuracy : int = 50, geneticVariability : float = 0.5, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 100, skew = 20, numImg = 400, batchSize = 40):
 
+
+def newGenerationAdd(oldGeneration, swap, merge, randomInt, numMembers, numImg, batchSize, skew = 5):
     """
-    Finally! Our very simple evolution simulation! I'm very exicted to see if this will work
+    Creating the new generation by picking members of the old to breed, 
+    skews to the left towards the members who have higher percentages; 
+    Outsiders are less likely to breed, but still there for genetic variety 
+    
+    Args: 
+        oldGeneration (list): Old generation of sheep 
+        skew (int): How far we should skew the selection of sheep
+        numMembers (int): How many members to include in the population 
+    Returns: 
+        newGeneration (list): New generation of sheep
     """
+    newGeneration = []
+    oldSort = sorted(oldGeneration, key=lambda x: x[1], reverse=True)
+    print("Current best 10")
+    for i in range(10):
+        print(oldSort[i][1])
+    
+    while len(newGeneration) <= numMembers: 
+        x = random.randint(0, len(oldGeneration) - 1) - skew
+        y = random.randint(x, len(oldGeneration) - 1) 
+        child = procreate(oldSort[y][0], oldSort[x][0], swap, merge, randomInt)
+        newGeneration.append([child, accuracy(dataset, numImg, batchSize, model = child, weight_path=None) * 100])
+def calculateTreshold(startingAccuracy: int , generation: int, spread: int = 5) -> float:
+    """
+    Accuracy treshold necessary to survive
+    
+    Args: 
+        startingAccuracy (int): The accuracy to first weed sheep out 
+        generation (int): Which generation the sheep are on 
+        spread (int): Really should be dependent on generation but 🤷
+        
+    Returns: 
+        coefficient * ln (float): The accuracy the current generation needs to pass 
+    """
+    ln = spread * math.log(generation + 1) + startingAccuracy
+    return ln
+
+def evolve(numMembers: int = 100, startingAccuracy : int = 50, geneticVariability : float = 1, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 100, skew = 5, numImg = 2000, batchSize = 20):
+    """    
+    Simulates the evolution of a population over a specified number of generations
+    
+    Args:
+        numMembers (int): Number of members in the initial generation
+        startingAccuracy (int): Initial accuracy threshold for survival
+        geneticVariability (float): Variability in genetic traits
+        shouldSwap (bool): Whether to allow swapping of genetic material
+        shouldMerge (bool): Whether to allow merging of genetic material
+        numGenerations (int): Number of generations to simulate
+        skew (int): Skew factor for genetic variability
+        numImg (int): Number of images to use in the dataset
+        batchSize (int): Size of the batch for processing images
+    
+    Returns:
+        None
+    """
+
 
     dataset = datasetTimed(DATASET_PATH) 
     firstgeneration = generationTimed(numMembers)
@@ -149,8 +209,8 @@ def evolve(numMembers: int = 100, startingAccuracy : int = 50, geneticVariabilit
             current_treshold = 80
 
         survivors = sheepPredationTimed(current_generation, current_dataset, numImg, batchSize, current_treshold)
-        survivors = addMembers(survivors, numMembers)
-        print(f"Survivor length {len(survivors)}")
+        print(f"Number of survivors {len(survivors)}")
+        survivors = addMembers(survivors, numMembers, current_dataset, numImg, batchSize)
         current_generation = newGeneration(survivors, shouldSwap, shouldMerge, geneticVariability, skew)
         print(f"Completed Generation {i + 1}")
     
@@ -160,12 +220,11 @@ def evolve(numMembers: int = 100, startingAccuracy : int = 50, geneticVariabilit
             os.mkdir(r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\evolvedWeights\{}'.format(numImg))
         except FileExistsError:
             pass
-        torch.save(best[i][0].state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\evolvedWeights\{}\generation{}.pt'.format(numImg, numGenerations))
-
+        torch.save(best[i][0].state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\evolvedWeights\{}\generation{}sheep{}.pt'.format(numImg, numGenerations, i))
 
 generationTimed = timed(generation)
-datasetTimed = timed(dataset)
 sheepPredationTimed = timed(sheepPredation)
+datasetTimed = timed(dataset)
 accuracyTimed = timed(accuracy)
 
 evolve()
@@ -181,7 +240,7 @@ testset = datasetTimed(DATASET_PATH)
 testset.shuffle()
 
 sheepPredationTimed = timed(sheepPredation)
-
 survivors = sheepPredationTimed(test, testset, 20, 20, 60)
 print(len(survivors))
 """
+
