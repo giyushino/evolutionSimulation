@@ -67,6 +67,6 @@ def checkSpeed(numModels, batchSizes, dataset = False):
 
     print("+" + "-" * total_width + "+")
 
-#checkSpeed(100, [x for x in range(1, 51, 5)], dataset = False)
+checkSpeed(100, [x for x in range(1, 51, 5)], dataset = False)
 
 
