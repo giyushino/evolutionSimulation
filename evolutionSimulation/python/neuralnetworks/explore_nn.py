@@ -5,6 +5,16 @@ import torch.nn as nn
 
 
 def brainStudy(model, see_all = False):
+    """
+    Prints all of the layers (name + size) in the model
+    
+    Args:
+        model (Brain): CNN to observe layers of
+        see_all (bool): Whether print the actual tensors
+
+    Returns: 
+        None
+    """
     print("\n")
     for name, module in model.named_modules():
         if name == "":
@@ -17,9 +27,11 @@ def brainStudy(model, see_all = False):
                 test = layer.weight.clone().detach()
                 print(test)
         print("---------------------------")
-    return model
 
 def paramSwap(model, swap = None):
+    """
+    If params 
+    """
     if swap == None:
         for name, module in model.named_modules():
             if name == "":
@@ -55,50 +67,3 @@ def compareParams(base, comparison):
         print(difference)
     return difference 
 
-
-brain1 = Brain()
-brains = ["C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/modelWeights/10000/model2.pt", "C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/modelWeights/5000/model2.pt", "C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/modelWeights/100/model2.pt"]
-
-brainWeights = []
-
-#brain1.load_state_dict(torch.load(r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/modelWeights/10000/model2.pt"))
-
-for i in brains:
-    temp_brain = Brain()
-    temp_brain.load_state_dict(torch.load(r"{}".format(i)))
-    brainWeights.append(temp_brain)
-
-brainWeights.append(brain1)
-
-
-print("Compare 10000, 10000")
-compareParams(brainWeights[0], brainWeights[0])
-print("--------------------------------")
-
-print("Compare 10000, 5000")
-compareParams(brainWeights[0], brainWeights[1])
-print("--------------------------------")
-
-print("Compare 10000, 100")
-compareParams(brainWeights[0], brainWeights[2])
-print("--------------------------------")
-
-print("Compare 10000, base")
-compareParams(brainWeights[0], brainWeights[3])
-print("--------------------------------")
-
-print("Compare 5000, 100")
-compareParams(brainWeights[1], brainWeights[2])
-print("--------------------------------")
-
-print("Compare 5000, base")
-compareParams(brainWeights[1], brainWeights[3])
-print("--------------------------------")
-
-print("Compare 100, base")
-compareParams(brainWeights[2], brainWeights[3])
-print("--------------------------------")
-
-print("Compare base, base")
-compareParams(brainWeights[3], brainWeights[3])
-print("--------------------------------")

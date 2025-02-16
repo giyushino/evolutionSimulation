@@ -3,7 +3,18 @@ import numpy as np
 import json
 import os 
 
-def create_dataset(directory = r"C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\data", save_path = r"dataset.json"):
+def create_dataset(directory = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/data", save_path = r"dataset.json"):
+    """
+    Function to create dataset; Has 5 classes
+
+    Args: 
+        directory (str): Path where data .npy files are saved
+        save_path (str): Path to save dataset 
+
+    Returns:
+        dataset (dataset): Loaded Huggingface dataset
+    """
+
     temp = []
     names = ["crocodile", "dragon", "duck", "lion", "sheep"]
 
@@ -33,6 +44,16 @@ def create_dataset(directory = r"C:\Users\allan\nvim\evolutionSimulation\evoluti
 #create_dataset()
 
 def create_dataset_simple(save_path, directory = r"C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\data"):
+    """
+    Simpler version of create_dataset, only 2 classes: lion and sheep
+    
+    Args: 
+        directory (str): Path where data .npy files are saved
+        save_path (str): Path to save dataset 
+
+    Returns:
+        dataset (dataset): Loaded Huggingface dataset
+    """
     temp = []
     names = ["lion", "sheep"]
     """change for later"""
@@ -60,4 +81,4 @@ def create_dataset_simple(save_path, directory = r"C:\Users\allan\nvim\evolution
     dataset = load_dataset("json", data_files=save_path)
     return dataset
 
-create_dataset_simple(save_path = "simple_dataset.json")
+#create_dataset_simple(save_path = "simple_dataset.json")
