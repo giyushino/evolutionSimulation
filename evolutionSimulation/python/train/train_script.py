@@ -22,6 +22,18 @@ animals = {
 }
 
 def batch(batch_size, start_index, dataset):
+    """
+    Batch image into tensors
+
+    Args: 
+        batch_size (int): Number of examples to pass through model at once 
+        start_index (int): Where to start in the dataset
+        dataset (dataset): Dataset we want to train model on
+
+    Returns:
+        tensor.float() (tensor): Batched tensor that's now a float 
+        truth (list): Ground truth labels, 0 or 1 for now
+    """
     truth = []
     images = [sample for sample in dataset["train"][start_index:start_index + batch_size]["image"]]
     tensor = torch.tensor(images)
@@ -30,7 +42,22 @@ def batch(batch_size, start_index, dataset):
         truth.append(animals[animal])
     return tensor.float(), truth
 
+
+# Currently only works for 2 classes, 0/1. Could be be predator/prey, should change later if we want to do multiple classes
 def train(num_img, batch_size, num_epoch, model, dataset):
+    """
+    Trains brain 🧠
+    
+    Arg: 
+        num_img (int): Number of images to train CNN on 
+        batch_size (int): Number of examples to pass through model at once 
+        num_epoch (int): Number of epochs to train model on 
+        model (Brain): Custom CNN 
+        dataset (dataset): Dataset we want to train model on
+
+    Returns:
+        None
+    """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     optimizer = optim.Adam(model.parameters(), lr=1e-5)
     model.to(device)
@@ -66,6 +93,3 @@ def train(num_img, batch_size, num_epoch, model, dataset):
         except FileExistsError:
             pass
         torch.save(model.state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\modelWeights\{}\model{}.pt'.format(num_img, epoch))
-
-
-
