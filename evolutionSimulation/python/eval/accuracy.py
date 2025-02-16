@@ -6,14 +6,14 @@ from datasets import load_dataset
 from evolutionSimulation.python.train.train_script import * 
 
 
-brain = Brain()
+
 print("Loaded CNN")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 data = load_dataset("json", data_files=r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json")
 print("Loaded Dataset")
 shuffled_dataset = data.shuffle() 
 
-def accuracy(model,  dataset, num_img, batch_size, weight_path):
+def accuracy(dataset, num_img, batch_size, weight_path):
     """
     Computes accracy of model
     Args: 
@@ -26,6 +26,7 @@ def accuracy(model,  dataset, num_img, batch_size, weight_path):
     """
     total = 0
     correct = 0
+    model = Brain()
     if weight_path: 
         model.load_state_dict(torch.load(weight_path))
     model.to(device) 
@@ -40,5 +41,3 @@ def accuracy(model,  dataset, num_img, batch_size, weight_path):
     
     print(f"Accuracy: {correct/total * 100}%")
     return correct/total
-
-#accuracy(brain, shuffled_dataset, 500, 10, weight_path=r'C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/simpleModelWeights/10000/model2.pt')
