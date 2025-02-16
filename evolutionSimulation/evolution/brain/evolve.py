@@ -142,7 +142,12 @@ def evolve(numMembers: int = 100, startingAccuracy : int = 50, geneticVariabilit
     current_dataset = dataset.shuffle()
     current_generation = firstgeneration
     for i in range(numGenerations):
-        current_treshold = startingAccuracy + (i * 3)
+        # rewrite so that it slows down as we approach 90 
+        current_treshold = startingAccuracy + (i * 0.5)
+        if current_treshold > 80:
+            # no need to shoot super high yet
+            current_treshold = 80
+
         survivors = sheepPredationTimed(current_generation, current_dataset, numImg, batchSize, current_treshold)
         survivors = addMembers(survivors, numMembers)
         print(f"Survivor length {len(survivors)}")
