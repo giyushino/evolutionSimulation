@@ -5,64 +5,68 @@ from evolutionSimulation.python.train.train_script import *
 from datasets import load_dataset
 import time
 
-temp = []
+def checkSpeed(numModels, batchSizes, dataset = False):
+    """
+    Checks the speed of different aspects of things in my project. 
+    Times how long it takes for the program to load datasets, create 
+    a Brain, and model inference 
 
-device = torch.device("cuda")
+    Args:
+        numModels (int): Number of models to create 
+        batchSizes (list): List of how many images to put into the batch 
+        dataset (bool): Whether or not we shoudl check how long it takes to load dataset
+    Return:
+        None
+    """
+    device = torch.device("cuda")
+    brains = []
+    t0 = time.perf_counter()
+    
+    # Create new CNN #numModels of time
+    for i in range(numModels):
+        temp = Brain()
+        brains.append(temp.to(device))
+    t1 = time.perf_counter()
+    print(f"Took {t1 - t0:.4f} to create {numModels} CNNs. {(t1-t0)/numModels:.4f} per model")
+    
+    if dataset: 
+        t2 = time.perf_counter()
+        six = load_dataset("json", data_files = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/dataset.json")
+        t3 = time.perf_counter()
+        print(f"{t3 - t2:.4f} to load complex dataset with {len(six["train"])} entries")
 
-brains = ["C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/simpleModelWeights/10000/model2.pt", "C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/simpleModelWeights/5000/model2.pt", "C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/simpleModelWeights/100/model2.pt"]
+    t4 = time.perf_counter()
+    two = load_dataset("json", data_files = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json")
+    two.shuffle()
+    t5 = time.perf_counter()
+    print(f"{t5 - t4:.4f} to load simple dataset with {len(two["train"])} entries") 
+    
+    times = []
+    # Time model inference
+    for batchSize in batchSizes:
+        t6 = time.perf_counter()
+        tempBatch = batch(batchSize, 0, two)
+        brains[0](tempBatch[0].to(device))
+        t7 = time.perf_counter()
+        times.append([batchSize, (t7 - t6) / batchSize])
+        #print(f"Took {t7 - t6:.4f} seconds to compute batch size {batchSize}. {(t7 - t6) / batchSize:.4f} seconds per image")
+    
+    times = sorted(times, key=lambda x: x[1])
+    print("Fastest Batch Sizes")
 
-brainWeights = []
-for i in brains:
-    temp_brain = Brain()
-    temp_brain.load_state_dict(torch.load(r"{}".format(i)))
-    brainWeights.append(temp_brain.to(device))
+    max_index_width = len(str(len(times)))
+    max_batch_width = max(len(str(time[0])) for time in times)
+    time_width = 16  
+    label_width = len(" images || ")  
+    total_width = max_index_width + max_batch_width + time_width + label_width + 18
 
-t0 = time.perf_counter()
-for i in range(100):
-    temp_brain = Brain()
-    temp.append(temp_brain.to(device))
-t1 = time.perf_counter()
+    print("+" + "-" * total_width + "+")
 
-t2 = time.perf_counter()
-data = load_dataset("json", data_files=r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json")
-t3 = time.perf_counter()
+    for i, (batch_size, foo) in enumerate(times, start=1):
+        print(f"| {i:>{max_index_width}}. {batch_size:<{max_batch_width}} images || {foo:.10f} seconds per image |")
 
-t4 = time.perf_counter()
-temp_batch = batch(1, 0, data)
-print(temp_batch)
+    print("+" + "-" * total_width + "+")
 
-prediction = brainWeights[0](temp_batch[0].to(device))
-t5 = time.perf_counter()
-print(prediction, temp_batch[1])
-
-t6 = time.perf_counter()
-temp_batch = batch(10, 0, data)
-print(temp_batch)
-
-prediction = brainWeights[0](temp_batch[0].to(device))
-t7 = time.perf_counter()
-print(prediction, temp_batch[1])
-
-t8 = time.perf_counter()
-temp_batch = batch(100, 0, data)
-print(temp_batch)
-
-prediction = brainWeights[0](temp_batch[0].to(device))
-t9 = time.perf_counter()
-print(prediction, temp_batch[1])
-
-t10 = time.perf_counter()
-temp_batch = batch(20, 0, data)
-print(temp_batch)
-
-prediction = brainWeights[0](temp_batch[0].to(device))
-t11 = time.perf_counter()
-print(prediction, temp_batch[1])
+#checkSpeed(100, [x for x in range(1, 51, 5)], dataset = False)
 
 
-print(f"Time taken to load dataset: {t3 - t2}")
-print(f"Time taken to create 100 brains: {t1 - t0}")
-print(f"Time taken to create batch + inference of size 1: {t5 - t4}")
-print(f"Time taken to create batch + inference of size 10: {t7 - t6}")
-print(f"Time taken to create batch + inference of size 20: {t11 - t10}")
-print(f"Time taken to create batch + inference of size 100: {t9 - t8}")
