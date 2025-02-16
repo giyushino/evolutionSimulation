@@ -16,8 +16,10 @@ def view(dataset, dataset_type, image_index):
     Returns:
         image (Numpy array): Self explanatory
     """
+    # Create numpy array
     image = np.array(dataset[dataset_type][image_index]["image"], dtype=np.uint8)
     print(data[dataset_type][image_index]["name"])
+    # Show image
     display = Image.fromarray(image)
     plt.imshow(display, cmap="gray") 
     plt.axis("off")  

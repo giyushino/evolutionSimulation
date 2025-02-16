@@ -3,7 +3,7 @@ import numpy as np
 import json
 import os 
 
-def create_dataset(directory = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/data", save_path = r"dataset.json"):
+def create_dataset(directory = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/data", save_path = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/dataset.json"):
     """
     Function to create dataset; Has 5 classes
 
@@ -16,11 +16,13 @@ def create_dataset(directory = r"C:/Users/allan/nvim/projects/evolutionSimulatio
     """
 
     temp = []
+    # Classes
     names = ["crocodile", "dragon", "duck", "lion", "sheep"]
 
     for name in os.listdir(directory):
         temp.append(np.load(os.path.join(directory, name)))
-
+    
+    # Reshape tensors to be 28x28
     reshaped = []
     for animal in temp:
         bruh = []
@@ -29,7 +31,7 @@ def create_dataset(directory = r"C:/Users/allan/nvim/projects/evolutionSimulatio
         reshaped.append(bruh)
     
     count = 0
-    
+    # Write to json file    
     with open(save_path, "w") as file:
         for i in range(len(reshaped)):
             for j in range(len(reshaped[i])):
@@ -43,7 +45,7 @@ def create_dataset(directory = r"C:/Users/allan/nvim/projects/evolutionSimulatio
 
 #create_dataset()
 
-def create_dataset_simple(save_path, directory = r"C:\Users\allan\nvim\evolutionSimulation\evolutionSimulation\data"):
+def create_dataset_simple(save_path, directory = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/data"):
     """
     Simpler version of create_dataset, only 2 classes: lion and sheep
     

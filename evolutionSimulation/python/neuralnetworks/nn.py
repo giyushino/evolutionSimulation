@@ -1,12 +1,15 @@
+# conda_env: evolution
+
 import torch.nn as nn 
 import torch.nn.functional as F
 
 
 # Simple neural network to model brain of sheep, 2 classes: predator or not
 class Brain(nn.Module):
-    def __init__(self, in_channels = 1, num_classes=2):
+    def __init__(self, name = "brain", in_channels = 1, num_classes=2):
+        self.name = name
         super(Brain, self).__init__()
-
+        
         self.conv1 = nn.Conv2d(in_channels, out_channels=8, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
         self.conv2 = nn.Conv2d(in_channels=8, out_channels=16, kernel_size=3, stride=1, padding=1)
@@ -20,4 +23,3 @@ class Brain(nn.Module):
         x = x.reshape(x.shape[0], -1)  
         x = self.fc1(x)            
         return x
-
