@@ -11,7 +11,7 @@ import math
 
 DATASET_PATH = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json" 
 DEVICE = torch.device("cuda")
-
+print(DEVICE)
 def generation(numMembers):
     """
     Creates a generation of the species, kept in list
@@ -85,12 +85,13 @@ def addMembers(generation, numMembers, dataset, numImg, batchSize, threshold):
     while used < desired:
         outsider = Brain(f"Outside Sheep {count}")
         result = accuracy(dataset, numImg, batchSize, model = outsider, weight_path=None) * 100
-        if result >= threshold - 4: 
-            generation.append([outsider, result])
-            print(f"\r🐑 {count + 1} || Acccuracy: {result:.2f}% {'| can mate! '} || {used} 🐑 have entered", end="", flush=True)
+        if result >= threshold - 4:
             used += 1
+            print(f"\r🐑 {count + 1} || Accuracy: {result:.2f}% {'| can mate! '} || {used} 🐑 have entered", end="", flush=True)
+            generation.append([outsider.to(DEVICE), result])
         else:
-            print(f"\r🐑 {count + 1} || Acccuracy: {result:.2f}% {'| forced out'} || {used} 🐑 have entered", end="", flush=True)
+            print(f"\r🐑 {count + 1} || Accuracy: {result:.2f}% {'| forced out'} || {used} 🐑 have entered", end="", flush=True)
+
         count += 1
     print("\n")
     return generation 
@@ -196,7 +197,7 @@ def calculateThreshold(startingAccuracy: int , generation: int, spread: int = 5)
     return ln
 
 
-def evolve(numMembers: int = 11, startingAccuracy : int = 55, geneticVariability : float = 0.5, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 1000, skew = 20, numImg = 200, batchSize = 20):
+def evolve(numMembers: int = 13, startingAccuracy : int = 55, geneticVariability : float = 0.5, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 10, skew = 20, numImg = 10, batchSize = 10):
     """    
     Simulates the evolution of a population over a specified number of generations
     
@@ -262,19 +263,19 @@ def evolve(numMembers: int = 11, startingAccuracy : int = 55, geneticVariability
         current_generation = newGeneration(survivors, shouldSwap, shouldMerge, geneticVariability, numMembers, skew)
      
     best = sorted(current_generation, key=lambda x: x[1], reverse=True)
-    for i in range(5):
+    for i in range(3):
         try: 
-            os.mkdir(r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\evolvedWeights\{}'.format(numImg))
+            os.makedirs(r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\evolvedWeights\img{}\generation{}'.format(numImg, numGenerations))
         except FileExistsError:
             pass
-        torch.save(best[i][0].state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\evolvedWeights\{}\generation{}sheep{}.pt'.format(numImg, numGenerations, i))
+        torch.save(best[i][0].state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\evolvedWeights\img{}\generation{}\population{}sheep{}.pt'.format(numImg, numGenerations, numMembers, i))
 
 generationTimed = timed(generation)
 sheepPredationTimed = timed(sheepPredation)
 datasetTimed = timed(dataset)
 accuracyTimed = timed(accuracy)
 
-evolve()
+#evolve()
 
 
 """

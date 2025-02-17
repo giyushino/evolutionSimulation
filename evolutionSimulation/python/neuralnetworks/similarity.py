@@ -28,69 +28,6 @@ def brainStudy(model, see_all = False):
                 print(test)
         print("---------------------------")
 
-def modifyParam(model, swapModel, swap = False, merge = False, layers: list = []):
-    """
-    Modify parameters of model either by swapping them or merging them
-
-    Args: 
-        model (Brain): model being modified 
-        swapModel (Brain): model whose params are being used to modify base 
-        swap (bool): whether or not to swap the model weights with the swapModel
-        merge (bool): whether or not to merge the weights, i.e. adding tensors and divding by 2
-        layers (list): what layers to modifiy; if arg is not specified, all are changed 
-    Returns: 
-        model
-    """
-    
-    if swap == True and len(layers) == 0:
-        print(f"Swapping layers of {model.name} with {swapModel.name}")
-        for name, module in model.named_modules():
-            if name == "":
-                continue
-            if hasattr(module, 'weight'):
-                print(f"Swapping {name}")
-                swap = getattr(swapModel, name)
-                swapTensor = swap.weight.clone().detach()
-                module.weight.data = swapTensor 
-    # Swap certain layers with anther model
-    elif swap == True and len(layers) != 0:
-        print(f"Swapping certain layers of {model.name} with {swapModel.name}")
-        for name, module in model.named_modules():
-            if name == "":
-                continue 
-            if name in layers:
-                print(f"Swapping {name}")
-                swap = getattr(swapModel, name)
-                swapTensor = swap.weight.clone().detach()
-                module.weight.data = swapTensor
-
-    # Merge 2 models and take the average weight
-    elif merge == True and len(layers) == 0:
-        print(f"Merging layers of {model.name} with {swapModel.name}")
-        for name, module in model.named_modules():
-            if name == "":
-                continue
-            if hasattr(module, 'weight'):
-                original = getattr(model, name)
-                merger = getattr(swapModel, name)
-                swapTensor = original.weight.clone().detach() + merger.weight.clone().detach() 
-                module.weight.data = torch.div(swapTensor, 2)
-
-    # Merge 2 models, only certain layers
-    elif merge == True and len(layers) != 0:
-        print(f"Merging certain layers of {model.name} with {swapModel.name}")
-        for name, module in model.named_modules():
-            if name == "":
-                continue 
-            if name in layers:
-                print(f"Merging {name}")
-                original = getattr(model, name)
-                merger = getattr(swapModel, name)
-                swapTensor = original.weight.clone().detach() + merger.weight.clone().detach() 
-                module.weight.data = torch.div(swapTensor, 2)
-
-    return model
-
 
 def compareParams(base, comparison, shouldPrint=True):
     """
@@ -182,14 +119,31 @@ def compareParams2(base, comparison):
     print("\n" * 2)
     return difference 
 
-"""
-brain1 = Brain("brain 1")
-brain2 = Brain("brain 2")
-brain3 = Brain("brain 3")
-brain3.load_state_dict(brain1.state_dict())
 
-modifyParam(brain1, brain2, True, False, ["conv1", "conv2"])
-compareParams(brain1, brain3)
-compareParams(brain2, brain3)
-#modifyParam(brain1, brain2, False, True, ["conv1", "conv2"])
-"""
+
+
+
+if __name__ == "__main__":
+    brain1 = Brain("brain 1")
+    brain2 = Brain("brain 2")
+    brain3 = Brain("brain 3")
+    brain3.load_state_dict(brain1.state_dict())
+
+    compareParams(brain1, brain3)
+    compareParams(brain2, brain3)
+    #modifyParam(brain1, brain2, False, True, ["conv1", "conv2"])
+    
+    normal = Brain("normal")
+    evolution = Brain("evolution")
+    test = Brain("normal2")
+    test2 = Brain("evolution2")
+    normal.load_state_dict(torch.load(r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/simpleModelWeights/8000/model2.pt"))
+    test.load_state_dict(torch.load(r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/simpleModelWeights/5000/model2.pt"))
+    evolution.load_state_dict(torch.load(r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/evolvedWeights/img2000/generation10/population100sheep0.pt"))
+    test2.load_state_dict(torch.load(r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/evolvedWeights/img400/generation10/population100sheep0.pt"))
+    brainStudy(evolution, see_all = True)
+    brainStudy(normal, see_all = True)
+
+    compareParams(normal, evolution)
+    compareParams(normal, test)
+    compareParams(test2, test)

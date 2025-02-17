@@ -7,7 +7,6 @@ from evolutionSimulation.scripts.timer import timed
 import time
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def accuracy(dataset, num_img, batch_size, model = None, weight_path = None, shouldPrint = False):
     """
@@ -20,6 +19,7 @@ def accuracy(dataset, num_img, batch_size, model = None, weight_path = None, sho
     Returns: 
         Accuracy
     """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     total = 0
     correct = 0
     if model == None:
@@ -28,6 +28,7 @@ def accuracy(dataset, num_img, batch_size, model = None, weight_path = None, sho
     # If weight path specified, load it with state dict
     if weight_path: 
         model.load_state_dict(torch.load(weight_path))
+        model.to(device)
     model.to(device) 
 
     # Iterate through dataset in batches
@@ -53,9 +54,12 @@ def multipleModelInference(dataset, num_img, batch_size, repeat):
         accuracy(dataset, num_img, batch_size, model = None, weight_path=r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/simpleModelWeights/10000/model2.pt")
     t1 = time.perf_counter()
     print(f"took {(t1 - t0):.4f} seconds")
+
+"""
 data = load_dataset("json", data_files=r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json")
 shuffled_dataset = data.shuffle() 
 
 accuracy = timed(accuracy)
 test = accuracy(shuffled_dataset, num_img = 4000, batch_size = 200, model = None, weight_path = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/evolvedWeights/400/generation10sheep1.pt", shouldPrint = True)
 print(test)
+"""

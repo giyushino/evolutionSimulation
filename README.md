@@ -1,6 +1,9 @@
 # evolutionSimulation
 Testing out if I can replicate evolutionary adaptations seen in nature, as well as the natural improvements of neural networks. Currently testing if a binary classification CNN trained to differentiate between lions and sheep can achieve relatively high accuracy simply through a rudimentary implementation of evolution.
 
+## Current Features 
+Evolution is currently simulated by iterating through generations of sheep. An initial population of size n is created, where 
+
 ## Setting up with Anaconda  
 To set up this project, clone the project and create a new Anaconda environment
 
@@ -15,8 +18,6 @@ python -m venv .venv
 .venv\Scripts\activate 
 pip install -e .
 ```
-
-## 
 
 
 ## To Do
