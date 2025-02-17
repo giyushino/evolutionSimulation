@@ -53,10 +53,9 @@ def multipleModelInference(dataset, num_img, batch_size, repeat):
         accuracy(dataset, num_img, batch_size, model = None, weight_path=r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/simpleModelWeights/10000/model2.pt")
     t1 = time.perf_counter()
     print(f"took {(t1 - t0):.4f} seconds")
-"""
 data = load_dataset("json", data_files=r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json")
 shuffled_dataset = data.shuffle() 
 
 accuracy = timed(accuracy)
-accuracy(shuffled_dataset, num_img = 2000, batch_size = 200, model = None, weight_path = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/evolvedWeights/200/generation10sheep1.pt", shouldPrint = True)
-"""
+test = accuracy(shuffled_dataset, num_img = 4000, batch_size = 200, model = None, weight_path = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/evolvedWeights/400/generation10sheep1.pt", shouldPrint = True)
+print(test)

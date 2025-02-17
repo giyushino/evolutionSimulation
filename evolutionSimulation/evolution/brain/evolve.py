@@ -55,18 +55,18 @@ def sheepPredation(generation, dataset, numImg, batchSize, treshold, shouldPrint
     """
     # Shuffle dataset again for good measure
     survivors = []
+    dataset.shuffle()
     for i in range(len(generation)):
-        dataset.shuffle()
         result = accuracy(dataset, numImg, batchSize, model = generation[i][0], weight_path=None) * 100
-        #print(f"{result} || {(i/len(generation) * 100)}%")
-        if i % 10 == 0:
-            print("🐑", end = " ", flush=True)
+        print(f"\r🐑 {i + 1}/{len(generation)} || Acccuracy: {result:.2f}% {'| survived' if result >= treshold else '| died    '}", end="", flush=True)
         if result >= treshold: 
             generation[i][1] = result
             survivors.append(generation[i])
+    print(f"\n{len(survivors)} sheep survived!")
     return survivors 
 
-def addMembers(generation, numMembers, dataset, numImg, batchSize):
+
+def addMembers(generation, numMembers, dataset, numImg, batchSize, threshold):
     """
     Add members to a generation if too many are dead to increase gene pool  
     
@@ -77,11 +77,22 @@ def addMembers(generation, numMembers, dataset, numImg, batchSize):
     Returns: 
         generation (list): The list of all surviving members  
     """
-
+    
     desired = numMembers - len(generation)
-    for i in range(desired):
-        outsider = Brain(f"Outside Sheep {i}")
-        generation.append([outsider, accuracy(dataset, numImg, batchSize, model = outsider, weight_path=None) * 100])
+    print(f"{desired} 🐑 are migrating in! Threshold || {threshold - 4}")
+    count = 0
+    used = 0
+    while used < desired:
+        outsider = Brain(f"Outside Sheep {count}")
+        result = accuracy(dataset, numImg, batchSize, model = outsider, weight_path=None) * 100
+        if result >= threshold - 4: 
+            generation.append([outsider, result])
+            print(f"\r🐑 {count + 1} || Acccuracy: {result:.2f}% {'| can mate! '} || {used} 🐑 have entered", end="", flush=True)
+            used += 1
+        else:
+            print(f"\r🐑 {count + 1} || Acccuracy: {result:.2f}% {'| forced out'} || {used} 🐑 have entered", end="", flush=True)
+        count += 1
+    print("\n")
     return generation 
 
 def procreate(father, mother, shouldSwap, shouldMerge, randomInt, layers = []):
@@ -117,10 +128,12 @@ def newGeneration(oldGeneration, swap, merge, randomInt, numMembers, skew = 5):
     newGeneration = []
     skew = int(len(oldGeneration)/skew)
     oldSort = sorted(oldGeneration, key=lambda x: x[1], reverse=True)
-    print("Current best 10")
+    print("Current smartest 10 🐑")
+    print("+--------------------+")
     for i in range(10):
-        print(oldSort[i][1])
-    
+        print(f"|| Accuracy || {(oldSort[i][1]):.1f} ||")
+    print("+--------------------+")
+    print("\n")
     for i in range(len(oldGeneration)):
         x = random.randint(0, len(oldGeneration) - 1) - skew
         y = random.randint(0, len(oldGeneration) - 1) - skew
@@ -136,7 +149,7 @@ def newGeneration(oldGeneration, swap, merge, randomInt, numMembers, skew = 5):
     return newGeneration
 
 
-def newGenerationAdd(oldGeneration, swap, merge, randomInt, numMembers, numImg, batchSize, skew = 5):
+def newGenerationAdd(oldGeneration, dataset, swap, merge, randomInt, numMembers, numImg, batchSize, skew = 5):
     """
     Creating the new generation by picking members of the old to breed, 
     skews to the left towards the members who have higher percentages; 
@@ -152,17 +165,24 @@ def newGenerationAdd(oldGeneration, swap, merge, randomInt, numMembers, numImg, 
     newGeneration = []
     oldSort = sorted(oldGeneration, key=lambda x: x[1], reverse=True)
     print("Current best 10")
-    for i in range(10):
+    for i in range(min(10, len(oldSort))):
         print(oldSort[i][1])
     
+    y = 0
     while len(newGeneration) <= numMembers: 
         x = random.randint(0, len(oldGeneration) - 1) - skew
-        y = random.randint(x, len(oldGeneration) - 1) 
+        if x < 0:
+            x = 0
+        while y == x: 
+            y = random.randint(0, len(oldGeneration) - 1)
         child = procreate(oldSort[y][0], oldSort[x][0], swap, merge, randomInt)
-        newGeneration.append([child, accuracy(dataset, numImg, batchSize, model = child, weight_path=None) * 100])
-def calculateTreshold(startingAccuracy: int , generation: int, spread: int = 5) -> float:
+        newGeneration.append([child, accuracy(dataset.shuffle(), numImg, batchSize, model = child, weight_path=None) * 100])
+    
+    return newGeneration
+
+def calculateThreshold(startingAccuracy: int , generation: int, spread: int = 5) -> float:
     """
-    Accuracy treshold necessary to survive
+    Accuracy threshold necessary to survive
     
     Args: 
         startingAccuracy (int): The accuracy to first weed sheep out 
@@ -175,7 +195,8 @@ def calculateTreshold(startingAccuracy: int , generation: int, spread: int = 5) 
     ln = spread * math.log(generation + 1) + startingAccuracy
     return ln
 
-def evolve(numMembers: int = 100, startingAccuracy : int = 50, geneticVariability : float = 1, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 100, skew = 5, numImg = 2000, batchSize = 20):
+
+def evolve(numMembers: int = 11, startingAccuracy : int = 55, geneticVariability : float = 0.5, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 1000, skew = 20, numImg = 200, batchSize = 20):
     """    
     Simulates the evolution of a population over a specified number of generations
     
@@ -193,8 +214,29 @@ def evolve(numMembers: int = 100, startingAccuracy : int = 50, geneticVariabilit
     Returns:
         None
     """
+    label_width = 25
+    value_width = 10
 
+    # Store the lines of information
+    lines = [
+        f"|| {'population size:'.ljust(label_width)} {str(numMembers).rjust(value_width)} || {'generations:'.ljust(label_width)} {str(numGenerations).rjust(value_width)} ||",
+        f"|| {'merge:'.ljust(label_width)} {str(shouldMerge).rjust(value_width)} || {'swap:'.ljust(label_width)} {str(shouldSwap).rjust(value_width)} ||",
+        f"|| {'starting accuracy:'.ljust(label_width)} {str(startingAccuracy).rjust(value_width)} || {'images:'.ljust(label_width)} {str(numImg).rjust(value_width)} ||",
+        f"|| {'genetic variability:'.ljust(label_width)} {str(geneticVariability).rjust(value_width)} || {'batch size:'.ljust(label_width)} {str(batchSize).rjust(value_width)} ||"
+    ]
 
+    # Determine the box width based on the longest line
+    box_width = max(len(line) for line in lines)
+
+    # Print the top border
+    print("+" + "-" * (box_width - 2) + "+")
+
+    # Print the lines inside the box
+    for line in lines:
+        print(line)
+
+    # Print the bottom border
+    print("+" + "-" * (box_width - 2) + "+")
     dataset = datasetTimed(DATASET_PATH) 
     firstgeneration = generationTimed(numMembers)
     
@@ -202,18 +244,23 @@ def evolve(numMembers: int = 100, startingAccuracy : int = 50, geneticVariabilit
     current_dataset = dataset.shuffle()
     current_generation = firstgeneration
     for i in range(numGenerations):
+        text = f" Generation {i} "
+        border = "+" + "-" * (len(text) + 2) + "+"
+        print(border)
+        print(f"||{text}||")
+        print(border) 
+       
         # rewrite so that it slows down as we approach 90 
-        current_treshold = startingAccuracy + (i * 0.5)
+        current_treshold = calculateThreshold(startingAccuracy, i, 2)
+        print(f"Current Threshold || {current_treshold} %")
         if current_treshold > 80:
             # no need to shoot super high yet
             current_treshold = 80
 
         survivors = sheepPredationTimed(current_generation, current_dataset, numImg, batchSize, current_treshold)
-        print(f"Number of survivors {len(survivors)}")
-        survivors = addMembers(survivors, numMembers, current_dataset, numImg, batchSize)
-        current_generation = newGeneration(survivors, shouldSwap, shouldMerge, geneticVariability, skew)
-        print(f"Completed Generation {i + 1}")
-    
+        survivors = addMembers(survivors, numMembers, current_dataset, numImg, batchSize, current_treshold)
+        current_generation = newGeneration(survivors, shouldSwap, shouldMerge, geneticVariability, numMembers, skew)
+     
     best = sorted(current_generation, key=lambda x: x[1], reverse=True)
     for i in range(5):
         try: 
