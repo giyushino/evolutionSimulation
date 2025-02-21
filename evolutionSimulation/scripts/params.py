@@ -1,7 +1,6 @@
 #conda_env: evolution
-from typing import ParamSpec
 from evolutionSimulation.python.neuralnetworks.nn import Brain
-from evolutionSimulation.python.neuralnetworks.params import *
+from evolutionSimulation.python.neuralnetworks.similarity import *
 from evolutionSimulation.scripts.timer import timed
 from evolutionSimulation.python.eval.accuracy import accuracy
 from datasets import load_dataset

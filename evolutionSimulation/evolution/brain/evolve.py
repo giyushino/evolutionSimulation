@@ -11,7 +11,6 @@ import math
 
 DATASET_PATH = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json" 
 DEVICE = torch.device("cuda")
-print(DEVICE)
 def generation(numMembers):
     """
     Creates a generation of the species, kept in list
@@ -79,13 +78,13 @@ def addMembers(generation, numMembers, dataset, numImg, batchSize, threshold):
     """
     
     desired = numMembers - len(generation)
-    print(f"{desired} 🐑 are migrating in! Threshold || {threshold - 4}")
+    print(f"{desired} 🐑 are migrating in! Threshold || {threshold}")
     count = 0
     used = 0
     while used < desired:
         outsider = Brain(f"Outside Sheep {count}")
         result = accuracy(dataset, numImg, batchSize, model = outsider, weight_path=None) * 100
-        if result >= threshold - 4:
+        if result >= threshold:
             used += 1
             print(f"\r🐑 {count + 1} || Accuracy: {result:.2f}% {'| can mate! '} || {used} 🐑 have entered", end="", flush=True)
             generation.append([outsider.to(DEVICE), result])
@@ -197,7 +196,7 @@ def calculateThreshold(startingAccuracy: int , generation: int, spread: int = 5)
     return ln
 
 
-def evolve(numMembers: int = 13, startingAccuracy : int = 55, geneticVariability : float = 0.5, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 10, skew = 20, numImg = 10, batchSize = 10):
+def evolve(numMembers: int = 50, startingAccuracy : int = 55, geneticVariability : float = 0.5, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 100, skew = 18, numImg = 100, batchSize = 20):
     """    
     Simulates the evolution of a population over a specified number of generations
     
@@ -252,7 +251,7 @@ def evolve(numMembers: int = 13, startingAccuracy : int = 55, geneticVariability
         print(border) 
        
         # rewrite so that it slows down as we approach 90 
-        current_treshold = calculateThreshold(startingAccuracy, i, 2)
+        current_treshold = calculateThreshold(startingAccuracy, i, 6)
         print(f"Current Threshold || {current_treshold} %")
         if current_treshold > 80:
             # no need to shoot super high yet
@@ -275,7 +274,8 @@ sheepPredationTimed = timed(sheepPredation)
 datasetTimed = timed(dataset)
 accuracyTimed = timed(accuracy)
 
-#evolve()
+
+evolve()
 
 
 """
