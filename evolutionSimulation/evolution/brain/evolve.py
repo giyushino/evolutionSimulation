@@ -1,4 +1,4 @@
-#conda_env: evolution
+#conda_env: evolution2
 from evolutionSimulation.python.neuralnetworks.nn import Brain
 from evolutionSimulation.python.train.training import * 
 from evolutionSimulation.python.eval.accuracy import * 

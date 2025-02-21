@@ -8,23 +8,28 @@ Evolution is currently simulated by iterating through generations of sheep. An i
 To set up this project, clone the project and create a new Anaconda environment
 
 ```sh
-conda create -n <my-env>
-pip install -e .
+conda env create -f environment.yml
 ```
 
-## Setting up with venv 
+After this, install [the proper version of Pytorch with GPU support for your device](https://pytorch.org/get-started/locally/)
+I'm using CUDA 12.6
 ```sh
-python -m venv .venv
-.venv\Scripts\activate 
-pip install -e .
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
 ```
 
+To allow imports across the project, run 
+```sh
+pip install -e .
+```
 
 ## To Do
 - [x] Create class for animals 
 - [x] Decide what the task for NN to solve is. MNIST? Binary classification?
 - [x] Test smallest number of training images to achieve good accuracy ~ 90% (5k seems fine)
-- [ ] GET THE EVOLUTION ACTUALLY WORKING
-- [ ] Something probably 
-- [ ] When predators get close to pray, run an image through their nn, maybe do like a google doodle. If the prey can accurately do the binary classification, it has a 50% of escaping. if it doesn't, it has 0% chance of escaping. 
+- [x] GET THE EVOLUTION ACTUALLY WORKING
+- [ ] Test on CPU (normal + evolve)
+- [ ] Speed up evolution (lower outsider sheep)
+- [ ] Test with more classes 
+- [ ] Add venv + uv accessibility 
+
 
