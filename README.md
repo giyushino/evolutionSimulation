@@ -11,7 +11,7 @@ To set up this project, clone the project and create a new Anaconda environment
 conda env create -f environment.yml
 ```
 
-After this, install [the proper version of Pytorch with GPU support for your device](https://pytorch.org/get-started/locally/)
+After this, install [the proper version of Pytorch with GPU support for your device.](https://pytorch.org/get-started/locally/)
 I'm using CUDA 12.6
 ```sh
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
