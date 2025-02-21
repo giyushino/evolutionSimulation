@@ -1,4 +1,6 @@
-evolutionSimulation/python/dataset/dataset.json
+*json
+*pyc  
+*npy
 evolutionSimulation/python/dataset/simple_dataset.json
 evolutionSimulation/data/full_numpy_bitmap_crocodile.npy
 evolutionSimulation/data/full_numpy_bitmap_dragon.npy
