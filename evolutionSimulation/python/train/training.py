@@ -88,7 +88,8 @@ def train(num_img, batch_size, num_epoch, model, dataset):
             os.mkdir(r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\simpleModelWeights\{}'.format(num_img))
         except FileExistsError:
             pass
-        torch.save(model.state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\simpleModelWeights\{}\model{}.pt'.format(num_img, epoch))
+        if epoch >= num_epoch - 3:
+            torch.save(model.state_dict(), r'C:\Users\allan\nvim\projects\evolutionSimulation\evolutionSimulation\weights\simpleModelWeights\{}\model{}.pt'.format(num_img, epoch))
 
 
 def trainSave(numImg, batchSize, epoch):
@@ -98,6 +99,6 @@ def trainSave(numImg, batchSize, epoch):
     train(numImg, batchSize, epoch, brain, shuffled_dataset)
 
 if __name__ == "__main__":
-    trainSave(8000, 40, 3)
+    trainSave(100000, 1000, 50)
 
 

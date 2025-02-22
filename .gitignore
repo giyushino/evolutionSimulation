@@ -9,6 +9,5 @@ evolutionSimulation/data/full_numpy_bitmap_lion.npy
 evolutionSimulation/data/full_numpy_bitmap_sheep.npy
 evolutionSimulation/data/full_numpy_bitmap_grass.npy
 evolutionSimulation/python/dataset/create_dataset.py
-evolutionSimulation/weights/
-evolutionSimulation/weights/evolvedWeights/
-
+evolutionSimulation/weights/evolvedWeights/simpleModelWeights
+evolutionSimulation/weights/evolvedWeights/evolvedWeights

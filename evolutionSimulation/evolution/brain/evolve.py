@@ -1,4 +1,4 @@
-#conda_env: evolution2
+#conda_env: evolution
 from evolutionSimulation.python.neuralnetworks.nn import Brain
 from evolutionSimulation.python.train.training import * 
 from evolutionSimulation.python.eval.accuracy import * 
@@ -25,6 +25,7 @@ def generation(numMembers):
         sheep = Brain(f"Sheep {i}")
         population.append([sheep.to(DEVICE), 0])
     return population
+
 
 def dataset(dataset_path):
     """
@@ -63,7 +64,6 @@ def sheepPredation(generation, dataset, numImg, batchSize, treshold, shouldPrint
             survivors.append(generation[i])
     print(f"\n{len(survivors)} sheep survived!")
     return survivors 
-
 
 def addMembers(generation, numMembers, dataset, numImg, batchSize, threshold):
     """
@@ -196,7 +196,7 @@ def calculateThreshold(startingAccuracy: int , generation: int, spread: int = 5)
     return ln
 
 
-def evolve(numMembers: int = 50, startingAccuracy : int = 55, geneticVariability : float = 0.5, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 100, skew = 18, numImg = 100, batchSize = 20):
+def evolve(numMembers: int = 20, startingAccuracy : int = 55, geneticVariability : float = 0.5, shouldSwap: bool = False, shouldMerge: bool = True, numGenerations = 50, skew = 18, numImg = 1000, batchSize = 100):
     """    
     Simulates the evolution of a population over a specified number of generations
     

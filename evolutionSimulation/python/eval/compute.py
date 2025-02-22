@@ -26,12 +26,16 @@ def computeEvolution(img, generation, population, sheep, dataset, numImg = 400, 
 
 
 if __name__ == "__main__":
-    dataset_path = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json" 
+    dataset_path = r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/python/dataset/simple_dataset.json"
+    dataset = load_dataset("json", data_files = dataset_path)
+    shuffled_dataset = dataset.shuffle()
+    """
     data = load_dataset("json", data_files = dataset_path)
     while True:
         shuffled_dataset = data.shuffle()
         computeEvolution(100, 5, 10, 0, shuffled_dataset)
-    #computeNormal(8000, 2, shuffled_dataset)
+    """
+    computeNormal(100000, 49, shuffled_dataset)
     #computeEvolution(200, 100, 50, 0, shuffled_dataset)
     #computeNormal(5000, 2, shuffled_dataset)
     #computeEvolution(400, 10, 100, 0, shuffled_dataset)

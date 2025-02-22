@@ -1,5 +1,6 @@
 #conda_env: evolution
 from evolutionSimulation.python.neuralnetworks.nn import Brain
+from evolutionSimulation.python.neuralnetworks.ViT import CLIPModel
 import torch
 import torch.nn 
 
@@ -82,7 +83,7 @@ def compareParams(base, comparison, shouldPrint=True):
     return difference
 
 
-def compareParams2(base, comparison):
+def compareParams2(base, comparison): 
     """
     Uses cosine similarity to calculate how similar two models are 
 
@@ -121,8 +122,6 @@ def compareParams2(base, comparison):
 
 
 
-
-
 if __name__ == "__main__":
     brain1 = Brain("brain 1")
     brain2 = Brain("brain 2")
@@ -131,7 +130,6 @@ if __name__ == "__main__":
 
     compareParams(brain1, brain3)
     compareParams(brain2, brain3)
-    #modifyParam(brain1, brain2, False, True, ["conv1", "conv2"])
     
     normal = Brain("normal")
     evolution = Brain("evolution")
@@ -141,8 +139,8 @@ if __name__ == "__main__":
     test.load_state_dict(torch.load(r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/simpleModelWeights/5000/model2.pt"))
     evolution.load_state_dict(torch.load(r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/evolvedWeights/img2000/generation10/population100sheep0.pt"))
     test2.load_state_dict(torch.load(r"C:/Users/allan/nvim/projects/evolutionSimulation/evolutionSimulation/weights/evolvedWeights/img400/generation10/population100sheep0.pt"))
-    brainStudy(evolution, see_all = True)
-    brainStudy(normal, see_all = True)
+    brainStudy(evolution, see_all = False)
+    brainStudy(normal, see_all = False)
 
     compareParams(normal, evolution)
     compareParams(normal, test)
